@@ -36,3 +36,4 @@ lerna-debug.log*
 
 Dockerfile
 .dockerignore
+ecosystem.config.*
