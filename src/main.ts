@@ -6,16 +6,6 @@ import {
 import { AppModule } from './app.module';
 
 /**
- * @description: NestJS with Express
- */
-
-// async function bootstrap() {
-//   const app = await NestFactory.create(AppModule);
-//   await app.listen(3000);
-// }
-// bootstrap();
-
-/**
  * @description: NestJS with Fastify
  */
 async function bootstrapFastify() {
@@ -23,6 +13,7 @@ async function bootstrapFastify() {
     AppModule,
     new FastifyAdapter(),
   );
-  await app.listen(3000, '0.0.0.0');
+  const PORT = process.env.PORT || 3000;
+  await app.listen(PORT, '0.0.0.0');
 }
 bootstrapFastify();
