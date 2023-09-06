@@ -3768,6 +3768,11 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
+layerr@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/layerr/-/layerr-2.0.1.tgz#0c98e6f599de4f76b75c7a6522c54b8c6c591ff0"
+  integrity sha512-z0730CwG/JO24evdORnyDkwG1Q7b7mF2Tp1qRQ0YvrMMARbt1DFG694SOv439Gm7hYKolyZyaB49YIrYIfZBdg==
+
 lazy@~1.0.11:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/lazy/-/lazy-1.0.11.tgz#daa068206282542c088288e975c297c1ae77b690"
@@ -5317,6 +5322,13 @@ uid@2.0.2:
   integrity sha512-u3xV3X7uzvi5b1MncmZo3i2Aw222Zk1keqLA1YkHldREkAhAqi65wuPfe7lHx8H/Wzy+8CE7S7uS3jekIM5s8g==
   dependencies:
     "@lukeed/csprng" "^1.0.0"
+
+ulidx@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/ulidx/-/ulidx-2.1.0.tgz#7ba72328e0a3fab74310f86b7b8d3b5ebdec319e"
+  integrity sha512-DlMi97oP9HASI3kLCjBlOhAG1SoisUrEqC2PJ7itiFbq9q5Zo0JejupXeu2Gke99W62epNzA4MFNToNiq8A5LA==
+  dependencies:
+    layerr "^2.0.1"
 
 universalify@^0.1.0:
   version "0.1.2"
