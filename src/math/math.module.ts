@@ -1,4 +1,4 @@
-import { Module, MiddlewareConsumer } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { MathController } from './math.controller';
 import { MathService } from './math.service';
 import { LoggerMiddleware } from '../middleware/logger.middleware';
@@ -7,7 +7,7 @@ import { LoggerMiddleware } from '../middleware/logger.middleware';
   controllers: [MathController],
   providers: [MathService],
 })
-export class MathModule {
+export class MathModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('math');
   }
