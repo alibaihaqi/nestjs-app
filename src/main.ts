@@ -15,6 +15,7 @@ async function bootstrap() {
     new FastifyAdapter({ logger: true }),
   );
 
+  app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
       // Whitelist is used to filter the request body property that sent to the server but we don't define
