@@ -4,6 +4,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { ulid } from 'ulidx';
 import { AppModule } from './app.module';
 
 /**
@@ -12,7 +13,10 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({ logger: true }),
+    new FastifyAdapter({
+      genReqId: () => ulid(),
+      logger: true,
+    }),
   );
 
   app.enableCors();
