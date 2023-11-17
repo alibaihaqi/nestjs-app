@@ -1,1 +1,1 @@
-export * from './chat.dto';
+export * from './openai.dto';
