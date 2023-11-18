@@ -14,3 +14,7 @@ export interface IAudioMessageResponse {
   name?: string;
   data?: any;
 }
+
+export interface ITranscriptionRequest {
+  assetPath: string;
+}
