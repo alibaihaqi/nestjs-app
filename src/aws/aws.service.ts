@@ -1,7 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { IS3Request, IS3Response } from './interfaces';
+import {
+  GetObjectCommand,
+  GetObjectCommandOutput,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import {
+  IS3GetAssetRequest,
+  IS3UploadRequest,
+  IS3UploadResponse,
+} from './interfaces';
 
 @Injectable()
 export class AwsService {
@@ -17,7 +26,9 @@ export class AwsService {
     });
   }
 
-  async uploadDataToAwsS3Bucket(request: IS3Request): Promise<IS3Response> {
+  async uploadDataToAwsS3Bucket(
+    request: IS3UploadRequest,
+  ): Promise<IS3UploadResponse> {
     const command = new PutObjectCommand({
       Bucket: this.configService.get('AWS_BUCKET_NAME'),
       Body: request.data,
@@ -30,6 +41,28 @@ export class AwsService {
       return {
         success: true,
         assetPath: `${this.configService.get('CLOUD_CDN_URL')}/${request.name}`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        errorMessage: error,
+      };
+    }
+  }
+
+  async getAssetFromS3Bucket(request: IS3GetAssetRequest) {
+    const command = new GetObjectCommand({
+      Key: request.assetPath,
+      Bucket: this.configService.get('AWS_BUCKET_NAME'),
+    });
+
+    try {
+      const response: GetObjectCommandOutput =
+        await this.awsClient.send(command);
+
+      return {
+        success: true,
+        data: response.Body,
       };
     } catch (error) {
       return {
