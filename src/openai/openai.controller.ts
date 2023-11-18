@@ -1,12 +1,17 @@
 import { Body, Controller, HttpCode, Post, UsePipes } from '@nestjs/common';
 import { OpenaiService } from './openai.service';
-import { createChatSchema, audioRequestSchema } from './dto';
+import {
+  audioRequestSchema,
+  createChatSchema,
+  transcriptionRequestSchema,
+} from './dto';
 import {
   IAudioMessageRequest,
   IChatRequest,
   IChatResponse,
+  ITranscriptionRequest,
 } from './interfaces';
-import { IS3Response } from '../aws/interfaces';
+import { IS3UploadResponse } from '../aws/interfaces';
 import { AwsService } from '../aws/aws.service';
 import { ZodValidationPipe } from '../utils/validation-pipes';
 
@@ -30,7 +35,7 @@ export class OpenaiController {
   @HttpCode(200)
   async getTextToAudio(
     @Body() request: IAudioMessageRequest,
-  ): Promise<IS3Response> {
+  ): Promise<IS3UploadResponse> {
     try {
       const speechData = await this.openaiService.getAudioSpeechData(request);
 
@@ -54,6 +59,30 @@ export class OpenaiController {
       }
 
       return awsResponse;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @Post()
+  @UsePipes(new ZodValidationPipe(transcriptionRequestSchema))
+  @HttpCode(200)
+  async getTranscriptionAudioToText(
+    @Body() request: ITranscriptionRequest,
+  ): Promise<IS3UploadResponse> {
+    try {
+      const getAssetData = await this.awsService.getAssetFromS3Bucket({
+        assetPath: request.assetPath,
+      });
+
+      if (!getAssetData.success) {
+        throw {
+          success: getAssetData.success,
+          errorMessage: getAssetData.errorMessage,
+        };
+      }
+
+      // TODO: Add new service transcriptions
     } catch (error) {
       return error;
     }
