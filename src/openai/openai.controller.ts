@@ -64,7 +64,7 @@ export class OpenaiController {
     }
   }
 
-  @Post()
+  @Post('/transcriptions')
   @UsePipes(new ZodValidationPipe(transcriptionRequestSchema))
   @HttpCode(200)
   async getTranscriptionAudioToText(
@@ -82,7 +82,19 @@ export class OpenaiController {
         };
       }
 
-      // TODO: Add new service transcriptions
+      const getTranscriptionResult =
+        await this.openaiService.getTranscriptionsFromOpenai({
+          data: getAssetData.data,
+        });
+
+      if (!getTranscriptionResult.success) {
+        throw {
+          success: getTranscriptionResult.success,
+          errorMessage: getTranscriptionResult.errorMessage,
+        };
+      }
+
+      return getTranscriptionResult;
     } catch (error) {
       return error;
     }
