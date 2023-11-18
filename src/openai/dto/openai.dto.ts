@@ -17,3 +17,9 @@ export const audioRequestSchema = z
     voice: z.enum(['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer']),
   })
   .required();
+
+export const transcriptionRequestSchema = z
+  .object({
+    assetPath: z.string().nonempty('Asset Path cannot be empty'),
+  })
+  .required();
