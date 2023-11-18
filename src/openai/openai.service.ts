@@ -2,11 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import { APIPromise } from 'openai/core';
+// import { ReadableStream } from 'node:stream/web';
+import { createReadStream, rmSync, writeFileSync } from 'node:fs';
 import {
   IAudioMessageRequest,
   IAudioMessageResponse,
   IChatRequest,
   IChatResponse,
+  ITranscriptionToTextRequest,
 } from './interfaces';
 import { genUlid } from '../utils/ulid';
 
@@ -57,6 +60,38 @@ export class OpenaiService {
         name: `${this.configService.get(
           'AWS_OPENAI_PATH',
         )}/audio/audio-${genUlid}.${response_format}`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        errorMessage: error,
+      };
+    }
+  }
+
+  async getTranscriptionsFromOpenai(request: ITranscriptionToTextRequest) {
+    try {
+      const respArrayBuffer = await request.data.transformToByteArray();
+      const bufferData = Buffer.from(respArrayBuffer);
+
+      // TODO: Find another way to directly do the transcription from buffer
+      // data and connect to OpenAI without saving it first.
+      // const bufferStream = new ReadableStream(respArrayBuffer);
+
+      const name = `speech-${genUlid}.mp3`;
+      writeFileSync(name, bufferData);
+
+      const response = await this.openai.audio.transcriptions.create({
+        // file: bufferStream,
+        file: createReadStream(name),
+        model: this.configService.get('OPENAI_API_TRANSCRIPTIONS_MODEL'),
+      });
+
+      rmSync(name);
+
+      return {
+        success: true,
+        text: response.text,
       };
     } catch (error) {
       return {
