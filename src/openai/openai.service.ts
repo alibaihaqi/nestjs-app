@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import OpenAI from 'openai';
-import { APIPromise } from 'openai/core';
-// import { ReadableStream } from 'node:stream/web';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { createReadStream, rmSync, writeFileSync } from 'node:fs';
+// import { ReadableStream } from 'node:stream/web';
+import OpenAI from 'openai';
+import { Stream } from 'openai/streaming';
+import { Observable } from 'rxjs';
+
 import {
   IAudioMessageRequest,
   IAudioMessageResponse,
@@ -16,6 +19,7 @@ import { genUlid } from '../utils/ulid';
 @Injectable()
 export class OpenaiService {
   private openai: OpenAI;
+  private readonly eventEmitter: EventEmitter2;
 
   constructor(private configService: ConfigService) {
     this.openai = new OpenAI({
@@ -23,10 +27,29 @@ export class OpenaiService {
     });
   }
 
-  getMessagesData(request: IChatRequest): APIPromise<OpenAI.ChatCompletion> {
-    return this.openai.chat.completions.create({
+  async getMessagesData(
+    request: IChatRequest,
+  ): Promise<OpenAI.ChatCompletion | Stream<OpenAI.ChatCompletionChunk>> {
+    const response = await this.openai.chat.completions.create({
       model: this.configService.get('OPENAI_API_MODEL'),
       messages: request.messages,
+      stream: request.stream || false,
+    });
+
+    if (request.stream) {
+      this.eventEmitter.emit('chatMessageCreated', response);
+    }
+
+    return response;
+  }
+
+  getStreamMessages(): Observable<OpenAI.ChatCompletionChunk> {
+    return new Observable((subscribe) => {
+      const listener = (message: OpenAI.ChatCompletionChunk) => {
+        subscribe.next(message);
+      };
+      this.eventEmitter.on('chatMessageCreated', listener);
+      return () => this.eventEmitter.off('chatMessageCreated', listener);
     });
   }
 
