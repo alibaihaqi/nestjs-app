@@ -47,7 +47,7 @@ export class OpenaiController {
       }
 
       const awsResponse = await this.awsService.uploadDataToAwsS3Bucket({
-        name: speechData.name,
+        name: speechData.assetPath,
         data: speechData.data,
       });
 
@@ -58,13 +58,16 @@ export class OpenaiController {
         };
       }
 
-      return awsResponse;
+      return {
+        ...awsResponse,
+        name: speechData.name,
+      };
     } catch (error) {
       return error;
     }
   }
 
-  @Post('/transcriptions')
+  @Post('/transcriptions-from-cloud')
   @UsePipes(new ZodValidationPipe(transcriptionRequestSchema))
   @HttpCode(200)
   async getTranscriptionAudioToText(

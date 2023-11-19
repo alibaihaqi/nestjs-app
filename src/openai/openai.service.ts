@@ -53,13 +53,15 @@ export class OpenaiService {
     try {
       const audioResponse = await this.openai.audio.speech.create(audioRequest);
       const buffer = Buffer.from(await audioResponse.arrayBuffer());
+      const assetName = `audio-${genUlid}.${response_format}`;
 
       return {
         success: true,
-        data: buffer,
-        name: `${this.configService.get(
+        assetPath: `${this.configService.get(
           'AWS_OPENAI_PATH',
-        )}/audio/audio-${genUlid}.${response_format}`,
+        )}/audio/${assetName}`,
+        data: buffer,
+        name: assetName,
       };
     } catch (error) {
       return {
@@ -78,7 +80,9 @@ export class OpenaiService {
       // data and connect to OpenAI without saving it first.
       // const bufferStream = new ReadableStream(respArrayBuffer);
 
-      const name = `speech-${genUlid}.mp3`;
+      const name = `${this.configService.get(
+        'OPENAI_API_TRANSCRIPTIONS_LOCAL_PATH',
+      )}/speech-${genUlid}.mp3`;
       writeFileSync(name, bufferData);
 
       const response = await this.openai.audio.transcriptions.create({
