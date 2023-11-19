@@ -39,3 +39,4 @@ Dockerfile
 ecosystem.config.*
 
 .env
+assets/*
