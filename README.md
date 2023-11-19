@@ -16,11 +16,32 @@ For current features, there're 3 different implementations with Open AI:
 
 #### Request
 
-TBD
+```json
+{
+    "messages": [
+        {"role": "system", "content": "You will be provided with a sentence in English, and your task is to translate it into Japanese."},
+        {"role": "user", "content": "My name is Fadli. What is yours?"}
+    ]
+}
+```
 
 #### Response
 
-TBD
+The implementation might be different since I need tto integrate it from front-end side to make it clearer.
+
+```json
+{
+    "success": true,
+    "message": {
+        "index": 0,
+        "message": {
+            "role": "assistant",
+            "content": "私の名前はファドリです。あなたの名前は何ですか？ (Watashi no namae wa Fadli desu. Anata no namae wa nan desu ka?)"
+        },
+        "finish_reason": "stop"
+    }
+}
+```
 
 ### Text to Audio
 
