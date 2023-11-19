@@ -12,6 +12,7 @@ export interface IAudioMessageResponse {
   success: boolean;
   errorMessage?: string;
   name?: string;
+  assetPath?: string;
   data?: any;
 }
 
