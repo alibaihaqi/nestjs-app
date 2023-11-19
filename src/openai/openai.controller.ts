@@ -1,4 +1,13 @@
-import { Body, Controller, HttpCode, Post, UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  Sse,
+  UsePipes,
+} from '@nestjs/common';
+import { Observable } from 'rxjs';
+
 import { OpenaiService } from './openai.service';
 import {
   audioRequestSchema,
@@ -14,6 +23,7 @@ import {
 import { IS3UploadResponse } from '../aws/interfaces';
 import { AwsService } from '../aws/aws.service';
 import { ZodValidationPipe } from '../utils/validation-pipes';
+import OpenAI from 'openai';
 
 @Controller('openai')
 export class OpenaiController {
@@ -26,8 +36,20 @@ export class OpenaiController {
   @UsePipes(new ZodValidationPipe(createChatSchema))
   @HttpCode(200)
   async getChatOpenai(@Body() request: IChatRequest): Promise<IChatResponse> {
-    const getMessages = await this.openaiService.getMessagesData(request);
+    const getMessages = (await this.openaiService.getMessagesData(
+      request,
+    )) as OpenAI.ChatCompletion;
     return this.openaiService.getChatOpenaiResponse(getMessages);
+  }
+
+  @Sse('/chat-streams')
+  @UsePipes(new ZodValidationPipe(createChatSchema))
+  @HttpCode(200)
+  async getChatStreamsOpenai(
+    @Body() request: IChatRequest,
+  ): Promise<Observable<OpenAI.ChatCompletionChunk>> {
+    await this.openaiService.getMessagesData(request);
+    return this.openaiService.getStreamMessages().pipe();
   }
 
   @Post('/text-to-audio')
