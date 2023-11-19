@@ -33,7 +33,7 @@ export class OpenaiService {
   getChatOpenaiResponse(message: OpenAI.ChatCompletion): IChatResponse {
     return {
       success: true,
-      message: message,
+      message: message.choices[0],
     };
   }
 

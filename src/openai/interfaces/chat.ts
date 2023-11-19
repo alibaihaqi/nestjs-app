@@ -11,5 +11,5 @@ export interface IChatRequest {
 
 export interface IChatResponse {
   success: boolean;
-  message: OpenAi.ChatCompletion;
+  message: OpenAi.ChatCompletion.Choice;
 }
