@@ -8,6 +8,7 @@ const messageSchema = z.object({
 export const createChatSchema = z
   .object({
     messages: z.array(messageSchema).min(1),
+    stream: z.boolean().default(false).optional(),
   })
   .required();
 

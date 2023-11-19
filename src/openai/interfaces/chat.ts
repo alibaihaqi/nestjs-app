@@ -7,6 +7,7 @@ interface IChatMessage {
 
 export interface IChatRequest {
   messages: IChatMessage[];
+  stream?: boolean;
 }
 
 export interface IChatResponse {
