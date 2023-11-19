@@ -7,6 +7,7 @@ export interface IS3UploadResponse {
   success: boolean;
   errorMessage?: string;
   assetPath?: string;
+  name?: string;
 }
 
 export interface IS3GetAssetRequest {
