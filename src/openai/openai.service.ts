@@ -19,9 +19,11 @@ import { genUlid } from '../utils/ulid';
 @Injectable()
 export class OpenaiService {
   private openai: OpenAI;
-  private readonly eventEmitter: EventEmitter2;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private eventEmitter: EventEmitter2,
+  ) {
     this.openai = new OpenAI({
       apiKey: this.configService.get('OPENAI_API_KEY'),
     });
@@ -37,7 +39,9 @@ export class OpenaiService {
     });
 
     if (request.stream) {
-      this.eventEmitter.emit('chatMessageCreated', response);
+      for await (const chunk of response as Stream<OpenAI.ChatCompletionChunk>) {
+        this.eventEmitter.emit('message', chunk);
+      }
     }
 
     return response;
@@ -48,15 +52,15 @@ export class OpenaiService {
       const listener = (message: OpenAI.ChatCompletionChunk) => {
         subscribe.next(message);
       };
-      this.eventEmitter.on('chatMessageCreated', listener);
-      return () => this.eventEmitter.off('chatMessageCreated', listener);
+      this.eventEmitter.on('message', listener);
+      return () => this.eventEmitter.off('message', listener);
     });
   }
 
   getChatOpenaiResponse(message: OpenAI.ChatCompletion): IChatResponse {
     return {
       success: true,
-      message: message.choices[0],
+      message: message?.choices?.length && message?.choices[0],
     };
   }
 
