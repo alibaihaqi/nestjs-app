@@ -6,7 +6,7 @@ import {
   Sse,
   UsePipes,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { Observable, interval, map } from 'rxjs';
 
 import { OpenaiService } from './openai.service';
 import {
@@ -18,6 +18,8 @@ import {
   IAudioMessageRequest,
   IChatRequest,
   IChatResponse,
+  IMessageEvent,
+  ISampleMessageEvent,
   ITranscriptionRequest,
 } from './interfaces';
 import { IS3UploadResponse } from '../aws/interfaces';
@@ -43,13 +45,19 @@ export class OpenaiController {
   }
 
   @Sse('/chat-streams')
-  @UsePipes(new ZodValidationPipe(createChatSchema))
-  @HttpCode(200)
-  async getChatStreamsOpenai(
-    @Body() request: IChatRequest,
-  ): Promise<Observable<OpenAI.ChatCompletionChunk>> {
-    await this.openaiService.getMessagesData(request);
-    return this.openaiService.getStreamMessages().pipe();
+  getChatStreamsOpenai(): Observable<IMessageEvent> {
+    return this.openaiService.getStreamMessages().pipe(
+      map((message: OpenAI.ChatCompletionChunk) => ({
+        id: message.id,
+        type: message.object,
+        data: message.choices[0],
+      })),
+    );
+  }
+
+  @Sse('/sse')
+  sse(): Observable<ISampleMessageEvent> {
+    return interval(1000).pipe(map(() => ({ data: { hello: 'world' } })));
   }
 
   @Post('/text-to-audio')
