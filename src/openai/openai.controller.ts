@@ -6,18 +6,21 @@ import {
   Sse,
   UsePipes,
 } from '@nestjs/common';
+import OpenAI from 'openai';
 import { Observable, interval, map } from 'rxjs';
 
 import { OpenaiService } from './openai.service';
 import {
   audioRequestSchema,
   createChatSchema,
+  imageRequestSchema,
   transcriptionRequestSchema,
 } from './dto';
 import {
   IAudioMessageRequest,
   IChatRequest,
   IChatResponse,
+  IImageGenerationRequest,
   IMessageEvent,
   ISampleMessageEvent,
   ITranscriptionRequest,
@@ -25,7 +28,6 @@ import {
 import { IS3UploadResponse } from '../aws/interfaces';
 import { AwsService } from '../aws/aws.service';
 import { ZodValidationPipe } from '../utils/validation-pipes';
-import OpenAI from 'openai';
 
 @Controller('openai')
 export class OpenaiController {
@@ -131,5 +133,12 @@ export class OpenaiController {
     } catch (error) {
       return error;
     }
+  }
+
+  @Post('/image-generation')
+  @UsePipes(new ZodValidationPipe(imageRequestSchema))
+  @HttpCode(200)
+  async getImageGenerationsApi(@Body() request: IImageGenerationRequest) {
+    return this.openaiService.getImageGenerations(request);
   }
 }
