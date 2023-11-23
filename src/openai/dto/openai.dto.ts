@@ -19,6 +19,12 @@ export const audioRequestSchema = z
   })
   .required();
 
+export const imageRequestSchema = z
+  .object({
+    input: z.string().nonempty('Input cannot be empty'),
+  })
+  .required();
+
 export const transcriptionRequestSchema = z
   .object({
     assetPath: z.string().nonempty('Asset Path cannot be empty'),

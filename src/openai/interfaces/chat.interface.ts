@@ -1,12 +1,7 @@
 import OpenAi from 'openai';
 
-interface IChatMessage {
-  role: 'assistant' | 'system' | 'user';
-  content: string;
-}
-
 export interface IChatRequest {
-  messages: IChatMessage[];
+  messages: OpenAi.ChatCompletionMessage[];
   stream?: boolean;
 }
 
