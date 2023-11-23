@@ -12,19 +12,20 @@ import {
   IAudioMessageResponse,
   IChatRequest,
   IChatResponse,
+  IImageGenerationRequest,
   ITranscriptionToTextRequest,
 } from './interfaces';
 import { genUlid } from '../utils/ulid';
 
 @Injectable()
 export class OpenaiService {
-  private openai: OpenAI;
+  private openaiService: OpenAI;
 
   constructor(
     private configService: ConfigService,
     private eventEmitter: EventEmitter2,
   ) {
-    this.openai = new OpenAI({
+    this.openaiService = new OpenAI({
       apiKey: this.configService.get('OPENAI_API_KEY'),
     });
   }
@@ -32,7 +33,7 @@ export class OpenaiService {
   async getMessagesData(
     request: IChatRequest,
   ): Promise<OpenAI.ChatCompletion | Stream<OpenAI.ChatCompletionChunk>> {
-    const response = await this.openai.chat.completions.create({
+    const response = await this.openaiService.chat.completions.create({
       model: this.configService.get('OPENAI_API_MODEL'),
       messages: request.messages,
       stream: request.stream || false,
@@ -78,7 +79,9 @@ export class OpenaiService {
     };
 
     try {
-      const audioResponse = await this.openai.audio.speech.create(audioRequest);
+      const audioResponse =
+        await this.openaiService.audio.speech.create(audioRequest);
+
       const buffer = Buffer.from(await audioResponse.arrayBuffer());
       const assetName = `audio-${genUlid}.${response_format}`;
 
@@ -112,7 +115,7 @@ export class OpenaiService {
       )}/speech-${genUlid}.mp3`;
       writeFileSync(name, bufferData);
 
-      const response = await this.openai.audio.transcriptions.create({
+      const response = await this.openaiService.audio.transcriptions.create({
         // file: bufferStream,
         file: createReadStream(name),
         model: this.configService.get('OPENAI_API_TRANSCRIPTIONS_MODEL'),
@@ -130,5 +133,14 @@ export class OpenaiService {
         errorMessage: error,
       };
     }
+  }
+
+  async getImageGenerations(
+    request: IImageGenerationRequest,
+  ): Promise<OpenAI.Images.ImagesResponse> {
+    return this.openaiService.images.generate({
+      prompt: request.input,
+      model: this.configService.get('OPENAI_API_IMAGE_MODEL'),
+    });
   }
 }
