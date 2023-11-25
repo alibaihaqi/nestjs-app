@@ -36,6 +36,8 @@ export class OpenaiService {
     const response = await this.openaiService.chat.completions.create({
       model: this.configService.get('OPENAI_API_MODEL'),
       messages: request.messages,
+      n: request.n || 1,
+      presence_penalty: request.presence_penalty || 0,
       stream: request.stream || false,
     });
 
