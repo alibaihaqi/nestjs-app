@@ -53,6 +53,9 @@ export class OpenaiService {
   getStreamMessages(): Observable<OpenAI.ChatCompletionChunk> {
     return new Observable((subscribe) => {
       const listener = (message: OpenAI.ChatCompletionChunk) => {
+        if (message.choices[0].finish_reason === 'stop') {
+          return subscribe.complete();
+        }
         subscribe.next(message);
       };
       this.eventEmitter.on('message', listener);
