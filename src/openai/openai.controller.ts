@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   HttpCode,
+  MessageEvent,
   Post,
   Sse,
   UsePipes,
@@ -21,8 +22,6 @@ import {
   IChatRequest,
   IChatResponse,
   IImageGenerationRequest,
-  IMessageEvent,
-  ISampleMessageEvent,
   ITranscriptionRequest,
 } from './interfaces';
 import { IS3UploadResponse } from '../aws/interfaces';
@@ -47,18 +46,20 @@ export class OpenaiController {
   }
 
   @Sse('/chat-streams')
-  getChatStreamsOpenai(): Observable<IMessageEvent> {
+  getChatStreamsOpenai(): Observable<MessageEvent> {
     return this.openaiService.getStreamMessages().pipe(
-      map((message: OpenAI.ChatCompletionChunk) => ({
-        id: message.id,
-        type: message.object,
-        data: message.choices[0],
-      })),
+      map(
+        (message: OpenAI.ChatCompletionChunk): MessageEvent => ({
+          id: message.id,
+          type: message.object,
+          data: message.choices[0],
+        }),
+      ),
     );
   }
 
   @Sse('/sse')
-  sse(): Observable<ISampleMessageEvent> {
+  sse(): Observable<MessageEvent> {
     return interval(1000).pipe(map(() => ({ data: { hello: 'world' } })));
   }
 
