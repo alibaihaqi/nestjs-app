@@ -7,11 +7,13 @@ import { CommonModule } from './common/common.module';
 import { MathModule } from './math/math.module';
 import { OpenaiModule } from './openai/openai.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
+import { ApiipModule } from './apiip/apiip.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     EventEmitterModule.forRoot(),
+    ApiipModule,
     AwsModule,
     CommonModule,
     MathModule,
