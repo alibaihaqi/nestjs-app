@@ -2,12 +2,14 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
+import { LoggerMiddleware } from './middleware/logger.middleware';
+import { ApiipModule } from './apiip/apiip.module';
 import { AwsModule } from './aws/aws.module';
 import { CommonModule } from './common/common.module';
 import { MathModule } from './math/math.module';
 import { OpenaiModule } from './openai/openai.module';
-import { LoggerMiddleware } from './middleware/logger.middleware';
-import { ApiipModule } from './apiip/apiip.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { RtcModule } from './rtc/rtc.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { ApiipModule } from './apiip/apiip.module';
     CommonModule,
     MathModule,
     OpenaiModule,
+    PrismaModule,
+    RtcModule,
   ],
 })
 export class AppModule implements NestModule {
