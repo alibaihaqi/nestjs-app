@@ -14,6 +14,8 @@
     "start:backend": "node dist/main",
     "pm2:start:prod": "pm2-runtime start ecosystem.config.cjs",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:prod": "prisma migrate deploy",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
