@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { IRtcConnectClient, IRtcClientRequest } from './interfaces';
+import { IRtcClientRequest, IRtcRoom } from './interfaces';
 import { PrismaService } from '../prisma/prisma.service';
 import { genUlid } from '../utils/ulid';
 
@@ -8,10 +8,11 @@ import { genUlid } from '../utils/ulid';
 export class RtcService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  addClientConnectionId(request: IRtcConnectClient) {
+  addClientConnectionId(request: IRtcClientRequest) {
     return this.prismaService['rtc_socket_user'].create({
       data: {
         connectionId: request.connectionId,
+        roomId: request.roomId || null,
         isActive: true,
       },
       select: {
@@ -21,7 +22,7 @@ export class RtcService {
     });
   }
 
-  inactiveClientConnection(request: IRtcConnectClient) {
+  inactiveClientConnection(request: IRtcClientRequest) {
     return this.prismaService['rtc_socket_user'].update({
       where: {
         connectionId: request.connectionId,
@@ -80,14 +81,15 @@ export class RtcService {
     });
   }
 
-  checkRoomAvailability(roomId: string) {
+  queryRoomByRoomId(request: IRtcRoom) {
     return this.prismaService['rtc_socket_room'].findFirst({
       where: {
-        roomId,
+        roomId: request.roomId,
       },
       select: {
         roomId: true,
         roomName: true,
+        socketUsers: request.includeUsers || false,
       },
     });
   }
