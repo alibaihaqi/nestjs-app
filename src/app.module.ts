@@ -26,6 +26,8 @@ import { RtcModule } from './rtc/rtc.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('common', 'openai/(.*)');
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('aws/(.*)', 'common/(.*)', 'openai/(.*)', 'rtc/(.*)');
   }
 }
