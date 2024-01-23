@@ -1,12 +1,9 @@
-export interface IRtcConnectClient {
-  connectionId: string;
-}
-
 export interface IRtcClientRequest {
   roomId?: string;
   connectionId: string;
 }
 
-export interface IRtcCheckRoomRequest {
+export interface IRtcRoom {
   roomId: string;
+  includeUsers?: boolean;
 }

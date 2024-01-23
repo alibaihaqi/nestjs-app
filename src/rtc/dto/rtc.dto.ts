@@ -6,7 +6,7 @@ export const connectClientSchema = z
   })
   .required();
 
-export const checkRoomSchema = z
+export const roomSchema = z
   .object({
     roomId: z.string(),
   })
