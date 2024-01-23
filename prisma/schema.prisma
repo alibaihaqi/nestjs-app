@@ -11,9 +11,22 @@ datasource db {
 }
 
 model rtc_socket_user {
-  id         Int         @default(autoincrement())
-  userId     String      @id @default(uuid()) @map("user_id")
-  connectionId String    @map("connection_id")
-  createdAt  DateTime    @default(now()) @map("created_at")
-  updatedAt  DateTime    @updatedAt @map("updated_at")
+  id            Int             @default(autoincrement())
+  userId        String          @id @default(uuid()) @map("user_id")
+  connectionId  String          @unique @map("connection_id")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  isActive      Boolean         @default(false) @map("is_active")
+  room          rtc_socket_room? @relation(fields: [roomId], references: [roomId])
+  roomId        String?          @map("room_id")
+}
+
+model rtc_socket_room {
+  id          Int               @default(autoincrement())
+  roomId      String            @id @default(uuid()) @map("room_id")
+  roomName    String            @map("room_name")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+  isActive    Boolean           @default(false) @map("is_active")
+  socketUsers rtc_socket_user[]
 }
