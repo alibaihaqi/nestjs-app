@@ -89,7 +89,15 @@ export class RtcService {
       select: {
         roomId: true,
         roomName: true,
-        socketUsers: request.includeUsers || false,
+        socketUsers: request.includeUsers
+          ? {
+              select: {
+                userId: true,
+                connectionId: true,
+                roomId: true,
+              },
+            }
+          : false || false,
       },
     });
   }
