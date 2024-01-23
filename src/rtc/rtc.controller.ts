@@ -108,17 +108,26 @@ export class RtcController {
 
     return {
       event: 'join-room',
+      message: {
+        success: true,
+      },
       actions: [
         {
-          action: 'BROADCAST', // exclude own connectionId
-          event: 'connection-prepare',
+          action: 'BROADCAST',
+          message: {
+            connectedUserSocketId: connectionId,
+            event: 'connection-prepare',
+          },
           targets: (getUsersByRoomId?.socketUsers || []).filter(
             (user) => user.connectionId !== connectionId,
           ),
         },
         {
-          action: 'PUBLISH',
-          event: '',
+          action: 'BROADCAST',
+          message: {
+            connectedUsers: getUsersByRoomId?.socketUsers || [],
+            event: 'room-users',
+          },
           targets: getUsersByRoomId?.socketUsers || [],
         },
       ],
