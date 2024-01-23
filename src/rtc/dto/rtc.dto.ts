@@ -5,3 +5,9 @@ export const connectClientSchema = z
     connectionId: z.string(),
   })
   .required();
+
+export const checkRoomSchema = z
+  .object({
+    roomId: z.string(),
+  })
+  .required();
