@@ -9,10 +9,10 @@ import {
 import { FastifyRequest } from 'fastify';
 
 import { RtcService } from './rtc.service';
-import { checkRoomSchema, connectClientSchema } from './dto';
+import { roomSchema, connectClientSchema } from './dto';
 
 import { ZodValidationPipe } from '../utils/validation-pipes';
-import { IRtcConnectClient, IRtcCheckRoomRequest } from './interfaces';
+import { IRtcClientRequest, IRtcRoom } from './interfaces';
 
 @Controller('rtc')
 export class RtcController {
@@ -20,7 +20,7 @@ export class RtcController {
 
   @Post('/connect')
   @UsePipes(new ZodValidationPipe(connectClientSchema))
-  async handleRtcConnection(@Body() request: IRtcConnectClient): Promise<any> {
+  async handleRtcConnection(@Body() request: IRtcClientRequest): Promise<any> {
     const result = await this.rtcService.addClientConnectionId(request);
     return {
       event: 'connect',
@@ -69,9 +69,11 @@ export class RtcController {
 
   @Post('/check-room')
   @HttpCode(200)
-  @UsePipes(new ZodValidationPipe(checkRoomSchema))
-  async handleCheckRoomAvailability(@Body() request: IRtcCheckRoomRequest) {
-    const result = await this.rtcService.checkRoomAvailability(request.roomId);
+  @UsePipes(new ZodValidationPipe(roomSchema))
+  async handleCheckRoomAvailability(@Body() request: IRtcRoom) {
+    const result = await this.rtcService.queryRoomByRoomId({
+      roomId: request.roomId,
+    });
 
     if (!result) {
       return {
@@ -83,6 +85,43 @@ export class RtcController {
     return {
       success: true,
       room: result,
+    };
+  }
+
+  @Post('join-room')
+  @HttpCode(200)
+  @UsePipes(new ZodValidationPipe(roomSchema))
+  async handleJoinRoom(
+    @Req() req: FastifyRequest['raw'],
+    @Body() request: IRtcRoom,
+  ) {
+    const connectionId = req.headers.connectionid as string;
+    await this.rtcService.addClientConnectionId({
+      roomId: request.roomId,
+      connectionId: connectionId,
+    });
+
+    const getUsersByRoomId = await this.rtcService.queryRoomByRoomId({
+      roomId: request.roomId,
+      includeUsers: true,
+    });
+
+    return {
+      event: 'join-room',
+      actions: [
+        {
+          action: 'BROADCAST', // exclude own connectionId
+          event: 'connection-prepare',
+          targets: (getUsersByRoomId?.socketUsers || []).filter(
+            (user) => user.connectionId !== connectionId,
+          ),
+        },
+        {
+          action: 'PUBLISH',
+          event: '',
+          targets: getUsersByRoomId?.socketUsers || [],
+        },
+      ],
     };
   }
 }
