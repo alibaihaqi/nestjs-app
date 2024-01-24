@@ -9,10 +9,10 @@ import {
 import { FastifyRequest } from 'fastify';
 
 import { RtcService } from './rtc.service';
-import { roomSchema, connectClientSchema } from './dto';
+import { connectClientSchema, roomSchema, signalSchema } from './dto';
 
 import { ZodValidationPipe } from '../utils/validation-pipes';
-import { IRtcClientRequest, IRtcRoom } from './interfaces';
+import type { IRtcClientRequest, IRtcRoom, IRtcSignal } from './interfaces';
 
 @Controller('rtc')
 export class RtcController {
@@ -32,12 +32,39 @@ export class RtcController {
   async handleRtcDisconnect(
     @Req() request: FastifyRequest['raw'],
   ): Promise<any> {
+    const connectionId = request.headers.connectionid as string;
+
     const result = await this.rtcService.inactiveClientConnection({
-      connectionId: request.headers.connectionid as string,
+      connectionId: connectionId,
     });
+
+    const getUsersByRoomId = await this.rtcService.queryRoomByRoomId({
+      roomId: result.roomId,
+      includeUsers: true,
+    });
+
     return {
+      success: true,
       event: 'disconnect',
-      ...result,
+      message: { success: true },
+      actions: [
+        {
+          action: 'BROADCAST',
+          message: {
+            connectionId: connectionId,
+            event: 'user-disconnected',
+          },
+          targets: getUsersByRoomId?.socketUsers || [],
+        },
+        {
+          action: 'BROADCAST',
+          message: {
+            connectedUsers: getUsersByRoomId?.socketUsers || [],
+            event: 'room-users',
+          },
+          targets: getUsersByRoomId?.socketUsers || [],
+        },
+      ],
     };
   }
 
@@ -62,8 +89,11 @@ export class RtcController {
     });
 
     return {
-      event: 'create-room',
-      ...result,
+      success: true,
+      message: {
+        event: 'create-room',
+        ...result,
+      },
     };
   }
 
@@ -84,7 +114,10 @@ export class RtcController {
 
     return {
       success: true,
-      room: result,
+      message: {
+        success: true,
+        room: result,
+      },
     };
   }
 
@@ -95,19 +128,64 @@ export class RtcController {
     @Req() req: FastifyRequest['raw'],
     @Body() request: IRtcRoom,
   ) {
-    const connectionId = req.headers.connectionid as string;
-    await this.rtcService.addClientConnectionId({
-      roomId: request.roomId,
-      connectionId: connectionId,
-    });
+    try {
+      const connectionId = req.headers.connectionid as string;
+      await this.rtcService.updateClientUserRoomId({
+        connectionId: connectionId,
+        roomId: request.roomId,
+      });
 
-    const getUsersByRoomId = await this.rtcService.queryRoomByRoomId({
-      roomId: request.roomId,
-      includeUsers: true,
-    });
+      const getUsersByRoomId = await this.rtcService.queryRoomByRoomId({
+        roomId: request.roomId,
+        includeUsers: true,
+      });
 
+      return {
+        success: true,
+        event: 'join-room',
+        message: {
+          success: true,
+        },
+        actions: [
+          {
+            action: 'BROADCAST',
+            message: {
+              connectedSocketId: connectionId,
+              event: 'connection-prepare',
+            },
+            targets: (getUsersByRoomId?.socketUsers || []).filter(
+              (user) => user.connectionId !== connectionId,
+            ),
+          },
+          {
+            action: 'BROADCAST',
+            message: {
+              connectedUsers: getUsersByRoomId?.socketUsers || [],
+              event: 'room-users',
+            },
+            targets: getUsersByRoomId?.socketUsers || [],
+          },
+        ],
+      };
+    } catch (error) {
+      console.log('Error handleJoinRoom', error);
+      return {
+        success: false,
+        message: `Error handle join room: ${error.message}`,
+      };
+    }
+  }
+
+  @Post('connection-init')
+  @HttpCode(200)
+  @UsePipes(new ZodValidationPipe(connectClientSchema))
+  async handleConnectionInit(
+    @Req() req: FastifyRequest['raw'],
+    @Body() request: IRtcClientRequest,
+  ) {
     return {
-      event: 'join-room',
+      success: true,
+      event: 'connection-init',
       message: {
         success: true,
       },
@@ -115,20 +193,37 @@ export class RtcController {
         {
           action: 'BROADCAST',
           message: {
-            connectedUserSocketId: connectionId,
-            event: 'connection-prepare',
+            connectedSocketId: req.headers.connectionid as string,
+            event: 'connection-init',
           },
-          targets: (getUsersByRoomId?.socketUsers || []).filter(
-            (user) => user.connectionId !== connectionId,
-          ),
+          targets: [{ connectionId: request.connectionId }],
         },
+      ],
+    };
+  }
+
+  @Post('connection-signal')
+  @HttpCode(200)
+  @UsePipes(new ZodValidationPipe(signalSchema))
+  async handleConnectionSignal(
+    @Req() req: FastifyRequest['raw'],
+    @Body() request: IRtcSignal,
+  ) {
+    return {
+      success: true,
+      event: 'connection-signal',
+      message: {
+        success: true,
+      },
+      actions: [
         {
           action: 'BROADCAST',
           message: {
-            connectedUsers: getUsersByRoomId?.socketUsers || [],
-            event: 'room-users',
+            connectionId: req.headers.connectionid as string,
+            signal: request.signal,
+            event: 'connection-signal',
           },
-          targets: getUsersByRoomId?.socketUsers || [],
+          targets: [{ connectionId: request.connectionId }],
         },
       ],
     };
