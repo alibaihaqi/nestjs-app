@@ -11,3 +11,10 @@ export const roomSchema = z
     roomId: z.string(),
   })
   .required();
+
+export const signalSchema = z
+  .object({
+    connectionId: z.string(),
+    signal: z.any(),
+  })
+  .required();

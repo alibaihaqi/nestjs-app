@@ -7,3 +7,8 @@ export interface IRtcRoom {
   roomId: string;
   includeUsers?: boolean;
 }
+
+export interface IRtcSignal {
+  connectionId: string;
+  signal: any;
+}
