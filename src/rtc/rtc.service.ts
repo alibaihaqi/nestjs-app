@@ -91,6 +91,9 @@ export class RtcService {
         roomName: true,
         socketUsers: request.includeUsers
           ? {
+              where: {
+                isActive: true,
+              },
               select: {
                 userId: true,
                 connectionId: true,
