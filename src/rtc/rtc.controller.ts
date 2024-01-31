@@ -68,18 +68,6 @@ export class RtcController {
     };
   }
 
-  @Post('/client-id')
-  async handleClientId(@Req() request: FastifyRequest['raw']): Promise<any> {
-    const result = await this.rtcService.getClientData({
-      connectionId: request.headers.connectionid as string,
-    });
-
-    return {
-      event: 'client-id',
-      ...result,
-    };
-  }
-
   @Post('/create-room')
   async handleCreateRoom(@Req() request: FastifyRequest['raw']): Promise<any> {
     const room = await this.rtcService.createRoom();

@@ -39,19 +39,6 @@ export class RtcService {
     });
   }
 
-  getClientData(request: IRtcClientRequest) {
-    return this.prismaService['rtc_socket_user'].findFirst({
-      where: {
-        connectionId: request.connectionId,
-      },
-      select: {
-        connectionId: true,
-        roomId: true,
-        userId: true,
-      },
-    });
-  }
-
   updateClientUserRoomId(request: IRtcClientRequest) {
     return this.prismaService['rtc_socket_user'].update({
       where: {
