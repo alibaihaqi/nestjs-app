@@ -45,8 +45,7 @@ export class RtcController {
 
     return {
       success: true,
-      event: 'disconnect',
-      message: { success: true },
+      message: { event: 'disconnect', success: true },
       actions: [
         {
           action: 'BROADCAST',
@@ -80,8 +79,18 @@ export class RtcController {
       success: true,
       message: {
         event: 'create-room',
-        ...result,
+        success: true,
       },
+      actions: [
+        {
+          action: 'BROADCAST',
+          message: {
+            ...result,
+            event: 'create-room',
+          },
+          targets: [{ connectionId: result.connectionId }],
+        },
+      ],
     };
   }
 
