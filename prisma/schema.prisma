@@ -14,6 +14,7 @@ model rtc_socket_user {
   id            Int             @default(autoincrement())
   userId        String          @id @default(uuid()) @map("user_id")
   connectionId  String          @unique @map("connection_id")
+  name          String?         @map("name")
   createdAt     DateTime        @default(now()) @map("created_at")
   updatedAt     DateTime        @updatedAt @map("updated_at")
   isActive      Boolean         @default(false) @map("is_active")
