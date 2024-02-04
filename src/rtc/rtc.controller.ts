@@ -22,9 +22,32 @@ export class RtcController {
   @UsePipes(new ZodValidationPipe(connectClientSchema))
   async handleRtcConnection(@Body() request: IRtcClientRequest): Promise<any> {
     const result = await this.rtcService.addClientConnectionId(request);
+
     return {
       event: 'connect',
       ...result,
+    };
+  }
+
+  @Post('client-id')
+  @HttpCode(200)
+  async handleGetClientId(@Req() request: FastifyRequest['raw']): Promise<any> {
+    const connectionId = request.headers.connectionid as string;
+    const result = await this.rtcService.getClientData({ connectionId });
+
+    return {
+      success: true,
+      message: { event: 'client-id', success: true },
+      actions: [
+        {
+          action: 'BROADCAST',
+          message: {
+            ...result,
+            event: 'client-id',
+          },
+          targets: [{ connectionId }],
+        },
+      ],
     };
   }
 
@@ -68,11 +91,18 @@ export class RtcController {
   }
 
   @Post('/create-room')
-  async handleCreateRoom(@Req() request: FastifyRequest['raw']): Promise<any> {
+  @HttpCode(200)
+  async handleCreateRoom(
+    @Req() request: FastifyRequest['raw'],
+    @Body() reqBody: any,
+  ): Promise<any> {
     const room = await this.rtcService.createRoom();
+
+    const connectionId = request.headers.connectionid as string;
     const result = await this.rtcService.updateClientUserRoomId({
       roomId: room.roomId,
-      connectionId: request.headers.connectionid as string,
+      name: reqBody.name || `user-${connectionId}`,
+      connectionId: connectionId,
     });
 
     const getUsersByRoomId = await this.rtcService.queryRoomByRoomId({
@@ -90,7 +120,7 @@ export class RtcController {
         {
           action: 'BROADCAST',
           message: {
-            ...result,
+            roomId: room.roomId,
             event: 'create-room',
           },
           targets: [{ connectionId: result.connectionId }],
@@ -142,6 +172,7 @@ export class RtcController {
       const connectionId = req.headers.connectionid as string;
       await this.rtcService.updateClientUserRoomId({
         connectionId: connectionId,
+        name: request.name,
         roomId: request.roomId,
       });
 
@@ -152,9 +183,9 @@ export class RtcController {
 
       return {
         success: true,
-        event: 'join-room',
         message: {
           success: true,
+          event: 'join-room',
         },
         actions: [
           {
@@ -195,9 +226,9 @@ export class RtcController {
   ) {
     return {
       success: true,
-      event: 'connection-init',
       message: {
         success: true,
+        event: 'connection-init',
       },
       actions: [
         {
@@ -221,9 +252,9 @@ export class RtcController {
   ) {
     return {
       success: true,
-      event: 'connection-signal',
       message: {
         success: true,
+        event: 'connection-signal',
       },
       actions: [
         {
