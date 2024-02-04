@@ -79,10 +79,26 @@ export class RtcService {
     });
   }
 
+  inactiveRoom(request: IRtcRoom) {
+    return this.prismaService['rtc_socket_room'].update({
+      where: {
+        roomId: request.roomId,
+      },
+      data: {
+        isActive: false,
+      },
+      select: {
+        roomId: true,
+        isActive: true,
+      },
+    });
+  }
+
   queryRoomByRoomId(request: IRtcRoom) {
     return this.prismaService['rtc_socket_room'].findFirst({
       where: {
         roomId: request.roomId,
+        isActive: true,
       },
       select: {
         roomId: true,

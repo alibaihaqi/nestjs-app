@@ -66,6 +66,12 @@ export class RtcController {
       includeUsers: true,
     });
 
+    if (!getUsersByRoomId?.socketUsers.length) {
+      await this.rtcService.inactiveRoom({
+        roomId: result.roomId,
+      });
+    }
+
     return {
       success: true,
       message: { event: 'disconnect', success: true },
@@ -148,7 +154,7 @@ export class RtcController {
     if (!result) {
       return {
         success: false,
-        errorMsg: 'Room is not found',
+        errorMsg: "Room isn't found or already inactive",
       };
     }
 
