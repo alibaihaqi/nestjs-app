@@ -1,11 +1,13 @@
 export interface IRtcClientRequest {
-  roomId?: string;
   connectionId: string;
+  name?: string;
+  roomId?: string;
 }
 
 export interface IRtcRoom {
   roomId: string;
   includeUsers?: boolean;
+  name?: string;
 }
 
 export interface IRtcSignal {
