@@ -75,6 +75,11 @@ export class RtcController {
       connectionId: request.headers.connectionid as string,
     });
 
+    const getUsersByRoomId = await this.rtcService.queryRoomByRoomId({
+      roomId: room.roomId,
+      includeUsers: true,
+    });
+
     return {
       success: true,
       message: {
@@ -89,6 +94,14 @@ export class RtcController {
             event: 'create-room',
           },
           targets: [{ connectionId: result.connectionId }],
+        },
+        {
+          action: 'BROADCAST',
+          message: {
+            connectedUsers: getUsersByRoomId?.socketUsers || [],
+            event: 'room-users',
+          },
+          targets: getUsersByRoomId?.socketUsers || [],
         },
       ],
     };
