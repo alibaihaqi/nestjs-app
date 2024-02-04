@@ -22,6 +22,18 @@ export class RtcService {
     });
   }
 
+  getClientData(request: IRtcClientRequest) {
+    return this.prismaService['rtc_socket_user'].findFirst({
+      where: {
+        connectionId: request.connectionId,
+        isActive: true,
+      },
+      select: {
+        connectionId: true,
+      },
+    });
+  }
+
   inactiveClientConnection(request: IRtcClientRequest) {
     return this.prismaService['rtc_socket_user'].update({
       where: {
@@ -33,7 +45,6 @@ export class RtcService {
       select: {
         connectionId: true,
         roomId: true,
-        userId: true,
         isActive: true,
       },
     });
@@ -46,6 +57,7 @@ export class RtcService {
       },
       data: {
         roomId: request.roomId,
+        name: request.name,
       },
       select: {
         connectionId: true,
@@ -63,7 +75,6 @@ export class RtcService {
       },
       select: {
         roomId: true,
-        roomName: true,
       },
     });
   }
@@ -75,16 +86,14 @@ export class RtcService {
       },
       select: {
         roomId: true,
-        roomName: true,
         socketUsers: request.includeUsers
           ? {
               where: {
                 isActive: true,
               },
               select: {
-                userId: true,
                 connectionId: true,
-                roomId: true,
+                name: true,
               },
             }
           : false || false,
