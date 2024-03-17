@@ -8,6 +8,9 @@ dependencies:
   '@aws-sdk/client-s3':
     specifier: ^3.451.0
     version: 3.485.0
+  '@google/generative-ai':
+    specifier: ^0.3.0
+    version: 0.3.0
   '@nestjs/axios':
     specifier: ^3.0.1
     version: 3.0.1(@nestjs/common@10.3.0)(axios@1.6.5)(reflect-metadata@0.1.14)(rxjs@7.8.1)
@@ -1192,6 +1195,11 @@ packages:
       fastify-plugin: 4.5.1
       path-to-regexp: 6.2.1
       reusify: 1.0.4
+    dev: false
+
+  /@google/generative-ai@0.3.0:
+    resolution: {integrity: sha512-6xbaA/JPpwCoe+lfxE2RavVB8JI8F3P6mCse1Sbm586HhJkyuSevK7Opt4l2dbQZFej+M8ALhMMpfBiRW05Fag==}
+    engines: {node: '>=18.0.0'}
     dev: false
 
   /@humanwhocodes/config-array@0.11.13:
