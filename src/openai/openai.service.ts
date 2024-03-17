@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { createReadStream, rmSync, writeFileSync } from 'node:fs';
-// import { ReadableStream } from 'node:stream/web';
 import OpenAI from 'openai';
 import { Stream } from 'openai/streaming';
 import { Observable } from 'rxjs';
