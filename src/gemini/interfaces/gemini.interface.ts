@@ -1,5 +1,4 @@
 import {
-  EnhancedGenerateContentResponse,
   GenerateContentResult,
   GenerateContentStreamResult,
 } from '@google/generative-ai';
@@ -11,10 +10,7 @@ export interface GeminiChatRequest {
 
 export interface GeminiChatResponse {
   success: boolean;
-  result:
-    | EnhancedGenerateContentResponse
-    | Promise<EnhancedGenerateContentResponse>
-    | null;
+  result: string | null;
 }
 
 export type GeminiChatGetMessageData =
