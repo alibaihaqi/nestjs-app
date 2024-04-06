@@ -7,9 +7,8 @@ import {
   Sse,
   UsePipes,
 } from '@nestjs/common';
-import { EnhancedGenerateContentResponse } from '@google/generative-ai';
 import { GeminiService } from './gemini.service';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { createGeminiChatSchema } from './dto';
 import { GeminiChatRequest } from './interfaces';
@@ -29,15 +28,7 @@ export class GeminiController {
 
   @Sse('/stream')
   @HttpCode(200)
-  getChatStreamsOpenai(): Observable<MessageEvent> {
-    return this.geminiService.getStreamMessages().pipe(
-      map(
-        (message: EnhancedGenerateContentResponse): MessageEvent => ({
-          id: String(message.candidates[0].index),
-          type: 'gemini-chat',
-          data: message.candidates[0],
-        }),
-      ),
-    );
+  getChatStreamsGemini(): Observable<MessageEvent> {
+    return this.geminiService.getStreamMessages().pipe();
   }
 }
