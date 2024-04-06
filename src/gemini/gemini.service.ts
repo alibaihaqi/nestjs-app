@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, MessageEvent } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
@@ -12,6 +12,7 @@ import {
   GeminiChatRequest,
   GeminiChatResponse,
 } from './interfaces';
+import { genUlid } from '../utils/ulid';
 
 @Injectable()
 export class GeminiService {
@@ -37,6 +38,7 @@ export class GeminiService {
       result = (await model.generateContentStream(
         request.message,
       )) as GenerateContentStreamResult;
+
       for await (const chunk of result.stream) {
         this.eventEmitter.emit('message', chunk);
       }
@@ -47,13 +49,14 @@ export class GeminiService {
     return result;
   }
 
-  getStreamMessages(): Observable<EnhancedGenerateContentResponse> {
+  getStreamMessages(): Observable<MessageEvent> {
     return new Observable((subscribe) => {
       const listener = (message: EnhancedGenerateContentResponse) => {
-        if (message.candidates[0].finishReason === 'STOP') {
-          return subscribe.complete();
-        }
-        subscribe.next(message);
+        subscribe.next({
+          id: genUlid,
+          type: 'message.stream.gemini',
+          data: message.text(),
+        });
       };
       this.eventEmitter.on('message', listener);
       return () => this.eventEmitter.off('message', listener);
@@ -61,9 +64,10 @@ export class GeminiService {
   }
 
   getChatResponse(message: GeminiChatGetMessageData): GeminiChatResponse {
+    const result = message.response as EnhancedGenerateContentResponse;
     return {
       success: true,
-      result: message.response,
+      result: result?.text && result?.text(),
     };
   }
 }
