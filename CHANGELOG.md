@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] - 2026-07-26
+
+### Added
+- `ARCHITECTURE.md` — narrative-first system reference: module/dependency tables, topology + auth model, Mermaid sequence diagrams for OpenAI chat (sync + SSE), TTS, transcription, and WebRTC signaling relay, full Prisma schema catalog, complete API reference (19 endpoints across 6 modules), consumer/client flow docs (no frontend in this repo — documents expected external WebSocket gateway + chat UI integration), endpoint-to-consumer reverse map, and a consolidated gotchas section.
+
 ## [0.2.0] - 2026-07-11
 
 ### Added
