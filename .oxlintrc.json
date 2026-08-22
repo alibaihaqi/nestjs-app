@@ -1,0 +1,5 @@
+{
+  "$schema": "./node_modules/oxlint/configuration-schema.json",
+  "plugins": ["typescript", "jest"],
+  "ignorePatterns": ["dist/", "coverage/", "src/generated/"]
+}

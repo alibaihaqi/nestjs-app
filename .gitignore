@@ -40,3 +40,6 @@ ecosystem.config.*
 
 .env
 assets/*
+
+# local env
+.env
