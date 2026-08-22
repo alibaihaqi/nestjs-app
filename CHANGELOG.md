@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] — 2026-08-22
+### Chore
+- Replaced ESLint 8 (+ @typescript-eslint, prettier plugins) with oxlint 1.79 — `keyv` no longer in lockfile
+- TypeScript 5.1 → 5.9.3, jest 29 → 30.4, ts-jest 29.4, prettier 3.9
+
 ## [Unreleased] - 2026-07-26
 
 ### Added

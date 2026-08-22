@@ -17,6 +17,7 @@ NestJS backend API for AI integrations (OpenAI, Gemini), WebRTC signaling, and A
 
 ```bash
 pnpm install
+# fresh clones: run `pnpm prisma:generate` before `pnpm build` — pnpm 10 blocks postinstall scripts
 pnpm prisma:generate          # generate Prisma client
 pnpm prisma:migrate:dev       # apply dev migrations
 pnpm start:dev                # dev server with watch
@@ -24,7 +25,7 @@ pnpm build && pnpm start:backend  # production
 pnpm pm2:start:prod           # production via PM2
 pnpm test                     # unit tests (Jest)
 pnpm test:e2e                 # e2e tests
-pnpm lint                     # ESLint + auto-fix
+pnpm lint                     # oxlint (src + test)
 pnpm format                   # Prettier
 ```
 
