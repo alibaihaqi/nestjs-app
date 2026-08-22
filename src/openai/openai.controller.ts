@@ -48,13 +48,11 @@ export class OpenaiController {
   @Sse('/chat-streams')
   getChatStreamsOpenai(): Observable<MessageEvent> {
     return this.openaiService.getStreamMessages().pipe(
-      map(
-        (message: OpenAI.ChatCompletionChunk): MessageEvent => ({
-          id: message.id,
-          type: message.object,
-          data: message.choices[0],
-        }),
-      ),
+      map((message: OpenAI.ChatCompletionChunk): MessageEvent => ({
+        id: message.id,
+        type: message.object,
+        data: message.choices[0],
+      })),
     );
   }
 

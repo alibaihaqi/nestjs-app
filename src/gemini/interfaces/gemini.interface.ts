@@ -14,6 +14,4 @@ export interface GeminiChatResponse {
 }
 
 export type GeminiChatGetMessageData =
-  | GenerateContentResult
-  | GenerateContentStreamResult
-  | null;
+  GenerateContentResult | GenerateContentStreamResult | null;
