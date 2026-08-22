@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] — 2026-08-23
+### Chore
+- Pinned Node 26.4.0 via `.node-version` (fleet standard, matches flagsphere/learning-docs)
+- Added `engines.node >=26.0.0` and `packageManager: pnpm@10.11.0` to `package.json`
+- Added `.github/workflows/ci.yml` — fleet-standard CI (checkout@v7, pnpm/action-setup@v6 from `packageManager`, setup-node@v7 via `node-version-file` + pnpm cache; install → prisma:generate → lint → test → build)
+
+### Fixed
+- Repaired 3 stub suites (`aws.service.spec.ts`, `openai.service.spec.ts`, `openai.controller.spec.ts`) — missing DI providers wired with minimal stubs (`ConfigService` `{ get: () => 'test' }`, `EventEmitter2` real instance, controller-level service stubs); assertions untouched. Test baseline lifted from 3F/4P to 0F/7P — all later upgrade-stage gates require 7/7 suites passing
+
 ## [Unreleased] — 2026-08-22
 ### Chore
 - Replaced ESLint 8 (+ @typescript-eslint, prettier plugins) with oxlint 1.79 — `keyv` no longer in lockfile
