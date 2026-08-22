@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        # version comes from package.json "packageManager"
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Generate Prisma client
+        # pnpm 10 blocks dependency postinstall scripts — generate manually
+        run: pnpm prisma:generate
+      - name: Lint
+        run: pnpm lint
+      - name: Test
+        run: pnpm test
+      - name: Build
+        run: pnpm build

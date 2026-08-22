@@ -4,6 +4,7 @@
 - [x] 0.1.0 — initial NestJS backend
 - [x] 0.2.0 — added to ali-pa monorepo, CLAUDE.md docs
 - [x] Stage 1 — tooling: oxlint + TS 5.9 + jest 30
+- [x] Stage 1.5 — Node 26.4.0 pin + engines/packageManager + fleet-standard CI + stub-test DI repair (7/7 baseline)
 
 ## In Progress
 - [ ] Unreleased — Gemini chat (streaming/non-streaming), WebRTC signaling module, Prisma + PostgreSQL, Fastify migration, math benchmark
