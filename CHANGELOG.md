@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] — 2026-08-23
 ### Chore
+- NestJS 10 → 11.2, fastify 4 → 5.12, @nestjs/config 4, @nestjs/event-emitter 3, @nestjs/axios 4, reflect-metadata 0.2.2, @types/node 26
 - Pinned Node 26.4.0 via `.node-version` (fleet standard, matches flagsphere/learning-docs)
 - Added `engines.node >=26.0.0` and `packageManager: pnpm@10.11.0` to `package.json`
 - Added `.github/workflows/ci.yml` — fleet-standard CI (checkout@v7, pnpm/action-setup@v6 from `packageManager`, setup-node@v7 via `node-version-file` + pnpm cache; install → prisma:generate → lint → test → build)

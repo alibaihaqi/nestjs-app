@@ -4,8 +4,8 @@ NestJS backend API for AI integrations (OpenAI, Gemini), WebRTC signaling, and A
 
 ## Tech Stack
 
-- **Runtime:** Node.js + NestJS 10 (Fastify adapter)
-- **Language:** TypeScript 5.1+ (CommonJS, relaxed strictness — `strictNullChecks: false`)
+- **Runtime:** Node.js + NestJS 11 (Fastify 5 adapter)
+- **Language:** TypeScript 5.9+
 - **Database:** PostgreSQL via Prisma 5.8
 - **AI:** OpenAI v4.18, Google Generative AI v0.3
 - **Cloud:** AWS S3 v3.451
