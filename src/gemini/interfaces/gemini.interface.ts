@@ -1,7 +1,4 @@
-import {
-  GenerateContentResult,
-  GenerateContentStreamResult,
-} from '@google/generative-ai';
+import { GenerateContentResponse } from '@google/genai';
 
 export interface GeminiChatRequest {
   message: string;
@@ -13,5 +10,9 @@ export interface GeminiChatResponse {
   result: string | null;
 }
 
+export type GeminiChatStreamResult = AsyncGenerator<GenerateContentResponse>;
+
 export type GeminiChatGetMessageData =
-  GenerateContentResult | GenerateContentStreamResult | null;
+  | GenerateContentResponse
+  | GeminiChatStreamResult
+  | null;

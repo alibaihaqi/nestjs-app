@@ -1,49 +1,55 @@
 import { Injectable, MessageEvent } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import {
-  EnhancedGenerateContentResponse,
-  GenerateContentStreamResult,
-  GoogleGenerativeAI,
-} from '@google/generative-ai';
+import { GenerateContentResponse, GoogleGenAI } from '@google/genai';
 import { Observable } from 'rxjs';
 import {
   GeminiChatGetMessageData,
   GeminiChatRequest,
   GeminiChatResponse,
+  GeminiChatStreamResult,
 } from './interfaces';
 import { genUlid } from '../utils/ulid';
 
+function isStreamResult(
+  message: NonNullable<GeminiChatGetMessageData>,
+): message is GeminiChatStreamResult {
+  return Symbol.asyncIterator in message;
+}
+
 @Injectable()
 export class GeminiService {
-  private googleGenAiService: GoogleGenerativeAI;
+  private googleGenAiService: GoogleGenAI;
 
   constructor(
     private configService: ConfigService,
     private eventEmitter: EventEmitter2,
   ) {
-    this.googleGenAiService = new GoogleGenerativeAI(
-      this.configService.get('GEMINI_API_KEY'),
-    );
+    this.googleGenAiService = new GoogleGenAI({
+      apiKey: this.configService.get('GEMINI_API_KEY'),
+    });
   }
+
   async getMessagesData(
     request: GeminiChatRequest,
   ): Promise<GeminiChatGetMessageData> {
-    const model = this.googleGenAiService.getGenerativeModel({
-      model: this.configService.get('GEMINI_CHAT_MODEL'),
-    });
+    const model = this.configService.get('GEMINI_CHAT_MODEL');
 
     let result: GeminiChatGetMessageData;
     if (request.stream) {
-      result = (await model.generateContentStream(
-        request.message,
-      )) as GenerateContentStreamResult;
+      result = await this.googleGenAiService.models.generateContentStream({
+        model,
+        contents: request.message,
+      });
 
-      for await (const chunk of result.stream) {
+      for await (const chunk of result) {
         this.eventEmitter.emit('message', chunk);
       }
     } else {
-      result = await model.generateContent(request.message);
+      result = await this.googleGenAiService.models.generateContent({
+        model,
+        contents: request.message,
+      });
     }
 
     return result;
@@ -51,11 +57,11 @@ export class GeminiService {
 
   getStreamMessages(): Observable<MessageEvent> {
     return new Observable((subscribe) => {
-      const listener = (message: EnhancedGenerateContentResponse) => {
+      const listener = (message: GenerateContentResponse) => {
         subscribe.next({
           id: genUlid,
           type: 'message.stream.gemini',
-          data: message.text(),
+          data: message.text,
         });
       };
       this.eventEmitter.on('message', listener);
@@ -64,10 +70,10 @@ export class GeminiService {
   }
 
   getChatResponse(message: GeminiChatGetMessageData): GeminiChatResponse {
-    const result = message.response as EnhancedGenerateContentResponse;
-    return {
-      success: true,
-      result: result?.text && result?.text(),
-    };
+    if (message === null || isStreamResult(message)) {
+      return { success: true, result: null };
+    }
+
+    return { success: true, result: message.text ?? null };
   }
 }

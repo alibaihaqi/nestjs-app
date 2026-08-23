@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const messageSchema = z.object({
   role: z.enum(['assistant', 'system', 'user']),
-  content: z.string().nonempty('content cannot be empty'),
+  content: z.string().min(1, 'content cannot be empty'),
 });
 
 export const createChatSchema = z
@@ -16,19 +16,19 @@ export const createChatSchema = z
 
 export const audioRequestSchema = z
   .object({
-    input: z.string().nonempty('content cannot be empty'),
+    input: z.string().min(1, 'content cannot be empty'),
     voice: z.enum(['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer']),
   })
   .required();
 
 export const imageRequestSchema = z
   .object({
-    input: z.string().nonempty('Input cannot be empty'),
+    input: z.string().min(1, 'Input cannot be empty'),
   })
   .required();
 
 export const transcriptionRequestSchema = z
   .object({
-    assetPath: z.string().nonempty('Asset Path cannot be empty'),
+    assetPath: z.string().min(1, 'Asset Path cannot be empty'),
   })
   .required();
