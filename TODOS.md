@@ -5,10 +5,10 @@
 - [x] 0.2.0 — added to ali-pa monorepo, CLAUDE.md docs
 - [x] Stage 1 — tooling: oxlint + TS 5.9 + jest 30
 - [x] Stage 1.5 — Node 26.4.0 pin + engines/packageManager + fleet-standard CI + stub-test DI repair (7/7 baseline)
+- [x] Stage 2 — platform: NestJS 11 + fastify 5
 
 ## In Progress
 - [ ] Unreleased — Gemini chat (streaming/non-streaming), WebRTC signaling module, Prisma + PostgreSQL, Fastify migration, math benchmark
-- [ ] Stage 2 — platform: NestJS 11 + fastify 5
 
 ## Planned
 - [ ] Cut a 0.3.0 release for the Unreleased feature set
