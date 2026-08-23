@@ -7,7 +7,7 @@ NestJS backend API for AI integrations (OpenAI, Gemini), WebRTC signaling, and A
 - **Runtime:** Node.js + NestJS 11 (Fastify 5 adapter)
 - **Language:** TypeScript 5.9+
 - **Database:** PostgreSQL via Prisma 7.9 (driver adapter: @prisma/adapter-pg, generated client in src/generated/prisma)
-- **AI:** OpenAI v4.18, Google Generative AI v0.3
+- **AI:** OpenAI v7.5, Google GenAI (`@google/genai`) v2.18
 - **Cloud:** AWS S3 v3.451
 - **Validation:** Zod (primary), custom `ZodValidationPipe`
 - **Streaming:** `@nestjs/event-emitter` for SSE

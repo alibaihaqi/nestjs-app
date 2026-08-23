@@ -4,7 +4,7 @@
 
 ## 1. Application Summary
 
-This is a single-tenant NestJS 10 backend (Fastify adapter) that fronts three unrelated capability groups behind one process: AI generation (OpenAI chat/TTS/transcription/image, Google Gemini chat), a stateless HTTP-based WebRTC signaling relay backed by Postgres presence tables, and a thin AWS S3 asset store used as the landing zone for OpenAI-generated audio. A small `apiip` module proxies IP geolocation lookups, and a `math` module exists purely as a benchmarking sandbox (loop-sum vs. closed-form sum) exercising the shared logging middleware. The service has **no authentication layer and wide-open CORS** — it is built as a personal/prototype API consumed by trusted first-party clients, not a public multi-tenant product. Stack: NestJS 10 + Fastify, TypeScript 5.1 (relaxed strictness, `strictNullChecks: false`), Prisma 5.8 over PostgreSQL, Zod for request validation, `@nestjs/event-emitter` to bridge async provider streams into SSE. Maturity: **early/prototype** — two Prisma models, stub-only tests (`toBeDefined()`), currently on an `[Unreleased]` changelog entry pending a 0.3.0 cut.
+This is a single-tenant NestJS 11 backend (Fastify adapter) that fronts three unrelated capability groups behind one process: AI generation (OpenAI chat/TTS/transcription/image, Google Gemini chat), a stateless HTTP-based WebRTC signaling relay backed by Postgres presence tables, and a thin AWS S3 asset store used as the landing zone for OpenAI-generated audio. A small `apiip` module proxies IP geolocation lookups, and a `math` module exists purely as a benchmarking sandbox (loop-sum vs. closed-form sum) exercising the shared logging middleware. The service has **no authentication layer and wide-open CORS** — it is built as a personal/prototype API consumed by trusted first-party clients, not a public multi-tenant product. Stack: NestJS 11 + Fastify 5, TypeScript 5.9 (relaxed strictness, `strictNullChecks: false`), Prisma 7 over PostgreSQL, Zod 4 for request validation, `@nestjs/event-emitter` to bridge async provider streams into SSE. Maturity: **early/prototype** — two Prisma models, stub-only tests (`toBeDefined()`), currently on an `[Unreleased]` changelog entry pending a 0.3.0 cut.
 
 ## 2. Tech Stack & Modules
 
@@ -29,8 +29,8 @@ Because `PrismaModule` and `AwsModule` are `@Global()`, no other module imports 
 | Component | Version | Purpose |
 |-----------|---------|---------|
 | PostgreSQL | — | Sole datastore, accessed via Prisma; holds only WebRTC presence state |
-| OpenAI SDK | v4.18 | Chat completions (incl. streaming), TTS (`audio.speech`), transcription (`audio.transcriptions`), image generation (`images.generate`) |
-| `@google/generative-ai` | v0.3 | Gemini chat completions (sync + stream) |
+| OpenAI SDK | v7.5 | Chat completions (incl. streaming), TTS (`audio.speech`), transcription (`audio.transcriptions`), image generation (`images.generate`) |
+| `@google/genai` | v2.18 | Gemini chat completions (sync + stream) |
 | `@aws-sdk/client-s3` | v3.451 | `PutObjectCommand` (upload) / `GetObjectCommand` (download) against one bucket |
 | apiip.com | external REST API | IP geolocation, called via `@nestjs/axios` `HttpService` |
 | `@nestjs/event-emitter` | v2.0 | In-process pub/sub (`'message'` event) bridging async-iterator provider streams into RxJS `Observable`s for SSE |
@@ -302,8 +302,8 @@ Prisma + PostgreSQL is used **only** for WebRTC presence state — no other modu
 
 | Method | Path | Handler | Auth | Description |
 |--------|------|---------|------|--------------|
-| POST | `/gemini/chat` | `GeminiController.getChatOpenai` | None | Chat completion (sync or stream-and-emit) via `createGeminiChatSchema` (`message`, `stream?`). If `stream:true`, chunks are emitted on `EventEmitter2` as a side effect and the full response is still returned. Returns `{success, result: text}` |
-| SSE | `/gemini/stream` | `GeminiController.getChatStreamsGemini` | None | Subscribes to the shared bus, maps each chunk to `{id: genUlid, type:'message.stream.gemini', data: message.text()}`. Same decoupled-bus caveat as OpenAI's SSE endpoint — plus `id` is a **module-load-time constant** (see gotchas), not per-message |
+| POST | `/gemini/chat` | `GeminiController.getChatOpenai` | None | Chat completion (sync or stream-and-emit) via `createGeminiChatSchema` (`message`, `stream?`). If `stream:true`, chunks are emitted on `EventEmitter2` as a side effect and the sync body returns `{success:true, result:null}` (the aggregate text is only available over `/gemini/stream`). Otherwise returns `{success, result: text}` |
+| SSE | `/gemini/stream` | `GeminiController.getChatStreamsGemini` | None | Subscribes to the shared bus, maps each chunk to `{id: genUlid, type:'message.stream.gemini', data: message.text}`. Same decoupled-bus caveat as OpenAI's SSE endpoint — plus `id` is a **module-load-time constant** (see gotchas), not per-message |
 
 ### WebRTC Signaling (`/rtc`) — HTTP relay, `connectionid` header–keyed
 

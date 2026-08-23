@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] — 2026-08-23 (stage 4)
+### Changed
+- openai 4.18 → 7.5 (zero source changes — the chat/audio/image surface used is stable across the v4→v7 line); @aws-sdk/client-s3, pm2 5 → 7, ulidx, class-validator 0.15
+- @google/generative-ai 0.3 (deprecated) → @google/genai 2.18 — `gemini` module rewritten: `new GoogleGenAI({apiKey})`, `models.generateContent({model, contents})`, stream chunks expose `.text` as a property. Public service signatures and `gemini.controller.ts` unchanged
+- zod 3 → 4 — `.nonempty(msg)` → `.min(1, msg)` (4 occurrences in `src/openai/dto/openai.dto.ts`); `ZodValidationPipe` unchanged and still returns 400 with issue detail
+
+### Note
+- `@google/genai` has no `GenerateContentStreamResult` type (the plan assumed one). `models.generateContentStream` resolves to `AsyncGenerator<GenerateContentResponse>`, so `GeminiChatGetMessageData` unions that instead, and `getChatResponse` narrows with an `asyncIterator` guard. Sync `POST /gemini/chat` with `stream:true` now returns `result: null` explicitly (previously `undefined` via a `.response` field the old SDK exposed)
+
 ## [Unreleased] — 2026-08-23
 ### Chore
 - Prisma 5.8 → 7.9: prisma.config.ts (datasource url moved out of schema — P1012), prisma-client generator (output src/generated/prisma), @prisma/adapter-pg driver adapter; nest build excludes prisma.config.ts (rootDir fix); all 9 migrations verified on scratch Postgres
