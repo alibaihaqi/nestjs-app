@@ -6,7 +6,7 @@ NestJS backend API for AI integrations (OpenAI, Gemini), WebRTC signaling, and A
 
 - **Runtime:** Node.js + NestJS 11 (Fastify 5 adapter)
 - **Language:** TypeScript 5.9+
-- **Database:** PostgreSQL via Prisma 5.8
+- **Database:** PostgreSQL via Prisma 7.9 (driver adapter: @prisma/adapter-pg, generated client in src/generated/prisma)
 - **AI:** OpenAI v4.18, Google Generative AI v0.3
 - **Cloud:** AWS S3 v3.451
 - **Validation:** Zod (primary), custom `ZodValidationPipe`
@@ -48,6 +48,7 @@ src/
 prisma/
   schema.prisma           # 2 models: rtc_socket_user, rtc_socket_room
   migrations/             # 9 migration files
+prisma.config.ts          # Prisma 7 config — schema path, datasource url (from env), migrations path
 ```
 
 ## Module → Route Mapping
