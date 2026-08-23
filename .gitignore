@@ -40,3 +40,6 @@ ecosystem.config.*
 
 .env
 assets/*
+
+# prisma generated client
+/src/generated
