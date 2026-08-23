@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] — 2026-08-23
 ### Chore
+- Prisma 5.8 → 7.9: prisma.config.ts (datasource url moved out of schema — P1012), prisma-client generator (output src/generated/prisma), @prisma/adapter-pg driver adapter; nest build excludes prisma.config.ts (rootDir fix); all 9 migrations verified on scratch Postgres
 - NestJS 10 → 11.2, fastify 4 → 5.12, @nestjs/config 4, @nestjs/event-emitter 3, @nestjs/axios 4, reflect-metadata 0.2.2, @types/node 26
 - Pinned Node 26.4.0 via `.node-version` (fleet standard, matches flagsphere/learning-docs)
 - Added `engines.node >=26.0.0` and `packageManager: pnpm@10.11.0` to `package.json`
