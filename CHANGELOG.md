@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-11-09 — chore: bump Node 26.4.0 -> 26.12.1
+
+### Changed
+- `.node-version` (and any hardcoded CI `node-version`) bumped 26.4.0 -> 26.12.1 for upstream Node security fixes.
+
 ## [Unreleased] — 2026-08-23 (stage 4)
 ### Changed
 - openai 4.18 → 7.5 (zero source changes — the chat/audio/image surface used is stable across the v4→v7 line); @aws-sdk/client-s3, pm2 5 → 7, ulidx, class-validator 0.15
